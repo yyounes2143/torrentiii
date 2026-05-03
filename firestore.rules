@@ -1,0 +1,36 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidJob(data) {
+      return data.userId is string &&
+             data.magnet is string &&
+             data.status in ['queued', 'downloading', 'uploading', 'completed', 'error'];
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Users collection
+    // Note: Since we are using client SDK on the server without Firebase Auth,
+    // we must temporarily allow read/write to these collections.
+    match /users/{userId} {
+      allow read, write: if true;
+    }
+
+    // Jobs collection
+    match /jobs/{jobId} {
+      allow read, write: if true;
+    }
+  }
+}

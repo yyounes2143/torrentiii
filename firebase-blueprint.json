@@ -1,0 +1,55 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Stores user OAuth tokens for Google Drive access.",
+      "type": "object",
+      "properties": {
+        "tokens": { "type": "object", "description": "OAuth2 tokens from Google." },
+        "mega": {
+          "type": "object",
+          "properties": {
+            "email": { "type": "string" },
+            "password": { "type": "string" }
+          }
+        },
+        "preferredStorage": { "type": "string", "enum": ["drive", "mega"] },
+        "email": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["tokens", "email"]
+    },
+    "TorrentJob": {
+      "title": "Torrent Job",
+      "description": "Represents a torrent download and upload task.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "magnet": { "type": "string" },
+        "name": { "type": "string" },
+        "status": { "type": "string", "enum": ["queued", "downloading", "uploading", "completed", "error"] },
+        "downloadProgress": { "type": "number" },
+        "uploadProgress": { "type": "number" },
+        "googleDriveFolderId": { "type": "string" },
+        "resumableUploadUrl": { "type": "string", "description": "Used for resuming Drive uploads." },
+        "totalSize": { "type": "number" },
+        "downloaded": { "type": "number" },
+        "uploaded": { "type": "number" },
+        "error": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "magnet", "status"]
+    }
+  },
+  "firestore": {
+    "users/{userId}": {
+      "schema": "User",
+      "description": "User OAuth data."
+    },
+    "jobs/{jobId}": {
+      "schema": "TorrentJob",
+      "description": "Active and past torrent jobs."
+    }
+  }
+}
